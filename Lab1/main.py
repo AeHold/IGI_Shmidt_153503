@@ -25,7 +25,7 @@ except ValueError:
     print("Please try again")
 
 
-try
+try:
 	s = input("Input array(in one line) \n")
 	arr = list(map(int, s.split()))
 	out = [x for x in arr if x % 2 == 0]
