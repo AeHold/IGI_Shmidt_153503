@@ -31,8 +31,7 @@ if __name__ == '__main__':
         if word != ' ':
             word_counter += 1
             word_length += len(word[1])
-            print(length)
     print('Number of sentences is:', number_of_sentences)
     print('Number of non-declarative sentences is:', nondeclarative_number)
-    print(average_length_sentences)
-    print(word_length / word_counter)
+    print('Average sentence length in characters is:', average_length_sentences)
+    print('Average word length in the text is:', word_length / word_counter)
