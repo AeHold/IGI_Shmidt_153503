@@ -1,0 +1,1 @@
+ABBREVIATIONS = ('Dr', 'Mr', 'Ms', 'Mrs', 'etc', 'e.g', 'B.C', 'A.C', 'inc')
