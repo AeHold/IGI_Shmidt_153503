@@ -20,3 +20,20 @@ class Container:
             else:
                 print("There no such element")
         print(f"Were removed {len(self.state) - count} elements")
+
+    def find(self, *args) -> None:
+        count = 0
+        for item in args:
+            if item in self.state:
+                print (f"Item {item} were found")
+                count += 1
+            else:
+                print (f"{item} not found")
+        if not count:
+            print("No items were found")
+        else:
+            print(f"Were found {count} items")
+    
+    def list(self) -> None:
+        print("Printing all elements from container")
+        print(*self.state, sep = '\n')
