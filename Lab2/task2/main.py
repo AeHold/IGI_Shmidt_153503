@@ -1,3 +1,4 @@
+import re
 from typing import Any, Set
 
 class Container:
@@ -37,3 +38,21 @@ class Container:
     def list(self) -> None:
         print("Printing all elements from container")
         print(*self.state, sep = '\n')
+
+    def grep(self, regex:str) -> None:
+        count = 0
+        for item in self.state:
+            if (res := re.match(regex, item)):
+                print(f"Matching pattern {item}")
+                count += 1
+            if not count:
+                print("There are no items, matching by this regular expression")
+            else:
+                print(f"Found {count} matches")
+
+    def switch(self, username) -> None:
+        if self.state == username:
+            print("You have already logged in this account")
+            return
+        
+   
