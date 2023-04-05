@@ -3,6 +3,38 @@ import json
 import os
 from typing import Any, Set
 
+class User:
+    
+    def __init__(self, username) -> None:
+        self.username = username
+        self.container: Container = Container(False)
+        self.load()
+
+    def load(self):
+        self.container.load(self.username)
+
+    def add(self, *args):
+        self.container.add(*args)
+
+    def remove(self, *args):
+        self.container.remove(*args)
+
+    def find(self, *args):
+        self.container.find(*args)
+    
+    def grep(self, regex: str):
+        self.container.grep(regex)
+    
+    def list(self):
+        self.container.list()
+
+    def save(self):
+        self.container.save(self.username)
+
+    def switch(self, username):
+        self.container.switch(username)
+
+
 class Container:    
     def add(self, *args) -> None:
         if self.saved:
@@ -56,7 +88,6 @@ class Container:
 
     def switch(self, username) -> None:
         data:dict = {}
-        self.username = username
         try:
             with open("data.txt", "r+") as f:
                 data = json.load(f)
@@ -70,19 +101,17 @@ class Container:
             if ans != "Y":
                 print("You haven't load user data")
                 self.state = set()
-                self.save()
+                self.save(username)
                 return
             else:
                self.load(username)
                return
         self.load(username)
         
-    def __init__(self, username):
-        self.saved: bool = True
+    def __init__(self, saved):
+        self.saved: bool = saved
         self.state: Set[Any] = set()
-        self.username = username
-
-        self.load(username)
+        
 
     def load(self, username: str) -> None:
         if not self.saved:
@@ -90,10 +119,9 @@ class Container:
             if ans != "Y":
                 print("Loading new data without saving")
             else:
-                self.save()
+                self.save(username)
         print ("Loading...")
         data:dict = {}
-        self.username = username
         try:
             with open("data.txt", "r+") as f:
                 data = json.load(f)
@@ -106,14 +134,14 @@ class Container:
         if not username in data:
             print("There are no such user in database. Creating...")
             self.state = set()
-            self.save()
+            self.save(username)
         else:
             self.state |= set(data.get(username, []))
             self.saved = True
 
         print("Loaded:", *self.state)
 
-    def save(self) -> None:
+    def save(self, username) -> None:
         if self.saved:
             print("Your data has been already saved")
             return
@@ -121,7 +149,7 @@ class Container:
         data = None
         with open("data.txt", "r+") as f:
             data = json.load(f)
-            data[self.username] |= list(self.state)
+            data[username] = list(self.state)
         with open("data.txt", "w+") as f:
             json.dump(data, f)
 
@@ -129,8 +157,7 @@ class Container:
         print("Data succesfully saved")
 
 if __name__ == '__main__':
-    username = input("Enter username to load data: ")
-    container = Container(username)
+    user: User = User(input("Enter username to load data: "))
     print("""List of commands:
         add - Add elements to container
         remove - Remove elements from container
@@ -145,32 +172,32 @@ if __name__ == '__main__':
         Choose:
         """)
     while (cmd := input()) != "stop":
-       
+        os.system("clear")
         print("Results")
         print('-'*40)
         match (cmd):
             case "add":
                 elements = input("Enter element(elements) to add to container(splitting by /): ")
-                container.add(*(elements.split('/')))
+                user.add(*(elements.split('/')))
             case "remove":
                 elements = input("Enter element(elements) to remove from container(splitting by /): ")
-                container.remove(*(elements.split('/')))
+                user.remove(*(elements.split('/')))
             case "find":
                 elements = input("Enter element(elements) to find them in container(splitting by /): ")
-                container.find(*(elements.split('/')))
+                user.find(*(elements.split('/')))
             case "list":
-                container.list()
+                user.list()
             case "grep":
                 regex = input("Enter regular expression to find elements: ")
-                container.grep(regex)
+                user.grep(regex)
             case "switch":
                 username = input("Enter username to switch user and load data: ")
-                container.switch(username)
+                user.switch(username)
             case "save":
-                container.save()
+                user.save()
             case "load":
                 username = input("Enter username to load data: ")
-                container.load(username)
+                user.load(username)
             case _:
                 continue
         print('-'*20)
@@ -187,10 +214,10 @@ if __name__ == '__main__':
         
         Choose:
         """)
-    if not container.saved:
+    if not user.saved:
         ans = input("Your data is not currently saved. Do you want to continue?(Y/N): ")
         if ans != "Y":
             print("Loading new data without saving")
         else:
-            container.save()
+            user.save()
             
