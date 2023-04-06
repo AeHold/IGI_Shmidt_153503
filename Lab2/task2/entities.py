@@ -11,7 +11,9 @@ class User:
     def __init__(self, username) -> None:
         self.username = username
         self.container: Container = Container(False)
-
+        if not os.path.exists(f"/home/aehold/githab/IGI_Shmidt_153503/Lab2/task2/data/{username}.pkl"):
+            self.data = set()
+            return
         answer = input(LOAD_QUESTION.format(username))
         if answer == "Y":
             self.load(self.username)
@@ -101,7 +103,7 @@ class Container:
                 print(f"Found {count} matches")
 
     def switch(self, new_username) -> None:
-        if not os.path.exists(f"./data/{new_username}.pkl"):
+        if not os.path.exists(f"/home/aehold/githab/IGI_Shmidt_153503/Lab2/task2/data/{new_username}.pkl"):
             self.data = set()
             return
         
@@ -117,7 +119,7 @@ class Container:
         print ("Loading...")
 
         try:
-            with open(f"./data/{username}.pkl", "rb") as f:
+            with open(f"/home/aehold/githab/IGI_Shmidt_153503/Lab2/task2/data/{username}.pkl", "rb") as f:
                 self.data = (
                     self.data | pickle.load(f) if not switch 
                     else pickle.load(f)
@@ -132,7 +134,7 @@ class Container:
             print("Your data has been already saved")
             return
         
-        with open(f"./data/{username}.pkl", "wb+") as f:
+        with open(f"/home/aehold/githab/IGI_Shmidt_153503/Lab2/task2/data/{username}.pkl", "wb+") as f:
             pickle.dump(self.data, f)
 
         self.saved = True
