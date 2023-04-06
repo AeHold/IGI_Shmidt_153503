@@ -12,6 +12,7 @@ class User:
         self.username = username
         self.container: Container = Container(False)
         if not os.path.exists(f"/home/aehold/githab/IGI_Shmidt_153503/Lab2/task2/data/{username}.pkl"):
+            print("There are no such user in database. Creating...")
             self.data = set()
             return
         answer = input(LOAD_QUESTION.format(username))
@@ -104,6 +105,7 @@ class Container:
 
     def switch(self, new_username) -> None:
         if not os.path.exists(f"/home/aehold/githab/IGI_Shmidt_153503/Lab2/task2/data/{new_username}.pkl"):
+            print("There are no such user in database. Creating...")
             self.data = set()
             return
         

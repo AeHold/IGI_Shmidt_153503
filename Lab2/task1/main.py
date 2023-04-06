@@ -29,7 +29,7 @@ def average_sentence_length(text):
     reg = r'[0-9]+'
     for word in result:
         if re.search(reg, word[1]):
-            continue
+            counter -= 1
         if (word[2] != '.' or word[2] != '?' or word[2] != '!' or word[2] != '...'):
             length += len(word[1])
         if (word[2] == '.' or word[2] == '?' or word[2] == '!' or word[2] == '...'):

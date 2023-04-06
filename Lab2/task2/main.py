@@ -9,7 +9,7 @@ if __name__ == '__main__':
     print(HELLO_MSG)
 
     while (cmd := input()) != "stop":
-        # os.system("clear")
+        os.system("clear")
         print("Results")
         print('-'*40)
 
