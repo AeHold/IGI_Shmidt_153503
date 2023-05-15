@@ -100,3 +100,43 @@ class Serializer(ABC):
                 "closure": closure,
                 "qualname": obj.__qualname__
             }
+        
+        elif isinstance(obj, MethodType):
+            return {
+                "__func__": obj.__func__,
+                "__self__": obj.__self__
+            }
+        
+        elif issubclass(type(obj), type):
+            return {
+                'name': obj.__name__,
+                'mro': tuple(obj.mro()[1:-1]),
+                'attrs': {
+                    k: v for k, v in obj.__dict__.items()
+                    if(
+                        k not in self._IGNORED_FIELDS and
+                        type(v) not in self._IGNORED_FIELD_TYPES
+                    )
+                }
+            }
+        
+        elif issubclass(type(obj), ModuleType):
+            return {'name': obj.__name__}
+        
+        elif isinstance(obj, staticmethod):
+            return self.get_items(obj.__func__)
+        
+        elif isinstance(obj, classmethod):
+            return self.get_items(obj.__func__)
+        
+        else:
+            return {
+                'class': obj.__class__,
+                'attrs': {
+                    k: v for k, v in obj.__dict__.items()
+                    if (
+                        k not in self._IGNORED_FIELDS and
+                        type(k) not in self._IGNORED_FIELD_TYPES
+                    )
+                }
+            }
