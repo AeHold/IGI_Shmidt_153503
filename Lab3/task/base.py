@@ -6,6 +6,7 @@ MethodDescriptorType, MappingProxyType, GetSetDescriptorType, MemberDescriptorTy
 from typing import Any, IO, Hashable, Collection, Iterable
 
 from utils.constants import TYPE_MAPPING
+from utils.helpers import Formatter
 
 class Serializer(ABC):
     _IGNORED_FIELDS: set[str] = (
@@ -20,7 +21,8 @@ class Serializer(ABC):
         MappingProxyType, GetSetDescriptorType,
         MemberDescriptorType
     )
-    
+    formatter = Formatter()
+
     @staticmethod
     def __get_key(value: Hashable, obj: dict):
         return [key for key in obj if obj[key] == value][0]
