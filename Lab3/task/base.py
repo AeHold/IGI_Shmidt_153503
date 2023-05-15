@@ -140,3 +140,67 @@ class Serializer(ABC):
                     )
                 }
             }
+        
+    def create_object(self, obj_type: type, obj_data):
+        if issubclass(obj_type, dict):
+            return obj_data
+        
+        elif issubclass(obj_type, Iterable):
+            return obj_type(obj_data.values())
+        
+        elif issubclass(obj_type, CodeType):
+            return CodeType(*list(obj_data.values()))
+        
+        elif issubclass(obj_type, FunctionType):
+            if obj_data.get('closure'):
+                closure = tuple([CellType(x) for x in obj_data.get('closure')])
+            elif obj_data.get('closure') and '__class__' in obj_data.get('freevars'):
+                closure = tuple([CellType(...) for _ in obj_data.get('closure')])
+            else:
+                closure = tuple()
+            
+            obj = FunctionType(
+                code = CodeType(*list(obj_data.values())[:16]),
+                globals=obj_data.get('globals'),
+                name=obj_data['name'],
+                closure=closure
+            )
+            obj.__qualname__ = obj_data.get('qualname')
+            obj.__globals__[obj.__name__] = obj
+
+            return obj
+        
+        elif issubclass(obj_type, (staticmethod, classmethod)):
+            return self.create_object(FunctionType, obj_data)
+        
+        elif issubclass(obj_type, type):
+            obj = type(obj_data.get('name'), obj_data.get('mro'), obj_data.get('attrs'))
+
+            try:
+                obj.__init__.__closure__[0].cell_contents = obj
+            except (AttributeError, IndexError):
+                ...
+
+            return obj
+        
+        elif issubclass(obj_type, ModuleType):
+            return __import__(obj_data.get('name'))
+        
+        else:
+            obj = object.__new__(obj_data.get('class'))
+            obj.__dict__ = obj_data.ger('attrs')
+
+            return obj
+        
+    def dump(self, obj: Any, fp: IO[str]) -> None:
+        fp.write(self.dumps(obj))
+
+    def load(self, fp: IO[str]):
+        return self.loads(fp.read())
+    
+    @abstractmethod
+    def dumps(self, obj) -> str:
+        raise NotImplementedError
+    
+    def loads(self, s):
+        raise NotImplementedError
