@@ -62,9 +62,9 @@ class JSONSerializer(Serializer):
             return self._KEYWORDS[obj]
         
         return JSON.format(
-            type = type(obj),
-            id = id(obj),
-            items = self.formatter.to_json(self.get_items(obj), self.dumps)
+            type=type(obj),
+            id=id(obj),
+            items=self.formatter.to_json(self.get_items(obj), self.dumps)
         )
     
     def loads(self, s: str):
@@ -83,4 +83,92 @@ class JSONSerializer(Serializer):
         return self.create_object(
             self._type_from_str(s, self._TYPE_PATTERN),
             self._load_from_json(s)
+        )
+
+class XMLSerializer(Serializer):
+    _TYPE_PATTERN: str = r'type="(\w+)"'
+
+    def _get_tag(self, tagname: str, lines) -> str:
+        counter = 1
+        it = enumerate(lines)
+
+        for i, line in it:
+            if not counter:
+                return lines[:i]
+
+            counter += bool(re.search(rf"<{tagname}.*>", line.strip("\t\n ")))
+            counter -= bool(re.search(rf"</{tagname}>", line.strip("\t\n ")))
+
+    def _load_from_xml(self, template: str) -> dict:
+        obj: dict = {}
+        lines: list[str] = template.split("\n")
+        it: Iterator[str] = enumerate(lines)
+
+        for i, line in it:
+            if "<item>" == line.strip("\t\n "):
+                item = self._get_tag("item", lines[i+1:])
+                key = self._get_tag("key", item[1:])
+                value = self._get_tag("value", item[len(key)+2:])
+
+                obj[self.loads("\n".join(key[:-1]))] = self.loads("\n".join(value[:-1]))
+
+                [next(it, None) for _ in range(len(item))]
+
+        return obj
+
+    def dumps(self, obj) -> str:
+        """Dumps an object to a string and returns the string.
+
+        Dumping is done via string templates with XML prefix in
+        ``utils.templates`` module.
+
+        :param obj: object to dump.
+        :return: string containing serialized (dumped) object.
+        """
+        if type(obj) in PRIMITIVE_TYPES:
+            obj_type = self._get_key(type(obj), TYPE_MAPPING)
+            return f'<primitive type="{obj_type}">{obj}</primitive>'
+
+        return XML.format(
+            type=self._get_key(type(obj), TYPE_MAPPING),
+            id=id(obj),
+            items=self.formatter.to_xml(self.get_items(obj), self.dumps)
+        )
+
+    def loads(self, s):
+        """Loads an object from a string and returns it.
+
+        Operates using templates with XML prefix from ``utils.templates``.
+
+        :param s: string to extract object from.
+        :return: deserialized Python object.
+        """
+        if not len(s):
+            return
+
+        if "primitive" in s.split("\n")[0]:
+            obj_data = re.search(
+                XML_PRIMITIVE.format(
+                    type="\w+",
+                    obj="(.*)"
+                ), s).group(1)
+            obj_type = self._type_from_str(
+                s=s.split("\n")[0],
+                pattern=self._TYPE_PATTERN
+            )
+
+            if obj_type == NoneType:
+                return None
+
+            if obj_type == bool:
+                return obj_data == "True"
+
+            if obj_type == EllipsisType:
+                return ...
+
+            return obj_type(obj_data)
+
+        return self.create_object(
+            self._type_from_str(s, self._TYPE_PATTERN),
+            self._load_from_xml(s)
         )
