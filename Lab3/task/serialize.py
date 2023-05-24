@@ -117,14 +117,6 @@ class XMLSerializer(Serializer):
         return obj
 
     def dumps(self, obj) -> str:
-        """Dumps an object to a string and returns the string.
-
-        Dumping is done via string templates with XML prefix in
-        ``utils.templates`` module.
-
-        :param obj: object to dump.
-        :return: string containing serialized (dumped) object.
-        """
         if type(obj) in PRIMITIVE_TYPES:
             obj_type = self._get_key(type(obj), TYPE_MAPPING)
             return f'<primitive type="{obj_type}">{obj}</primitive>'
@@ -136,13 +128,7 @@ class XMLSerializer(Serializer):
         )
 
     def loads(self, s):
-        """Loads an object from a string and returns it.
 
-        Operates using templates with XML prefix from ``utils.templates``.
-
-        :param s: string to extract object from.
-        :return: deserialized Python object.
-        """
         if not len(s):
             return
 

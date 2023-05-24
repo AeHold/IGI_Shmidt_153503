@@ -24,7 +24,7 @@ class Serializer(ABC):
     formatter = Formatter()
 
     @staticmethod
-    def __get_key(value: Hashable, obj: dict):
+    def __get_key(value, obj: dict):
         return [key for key in obj if obj[key] == value][0]
     
     @classmethod
@@ -65,7 +65,7 @@ class Serializer(ABC):
         
         elif isinstance(obj, FunctionType):
             if obj.__closure__ and "__class__" in obj.__code__.co_freevars:
-                closure = ([... for _ in obj.__closure__])if
+                closure = ([... for _ in obj.__closure__])
             elif obj.__closure__:
                 closure = ([cell.cell_contents for cell in obj.__closure__])
             else:
@@ -204,5 +204,6 @@ class Serializer(ABC):
     def dumps(self, obj) -> str:
         raise NotImplementedError
     
+    @abstractmethod
     def loads(self, s):
         raise NotImplementedError
