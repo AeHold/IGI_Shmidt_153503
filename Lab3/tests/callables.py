@@ -1,6 +1,7 @@
 import unittest
 
-from Lab3.task.serialize import XMLSerializer, JSONSerializer
+from Lab3.task.serialize import JSONSerializer, XMLSerializer
+
 
 TEST_GLOBAL_1 = 19
 

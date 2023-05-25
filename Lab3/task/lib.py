@@ -1,7 +1,7 @@
 import argparse
 
-from .base import Serializer
-from .serialize import JSONSerializer
+from Lab3.task.base import Serializer
+from Lab3.task.serialize import JSONSerializer
 
 def main():
     parser = argparse.ArgumentParser(prog = "AeHold")

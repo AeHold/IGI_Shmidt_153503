@@ -1,7 +1,8 @@
-from .constants import PRIMITIVE_TYPES
-from .templates import XML_ITEM
+from Lab3.task.utils.constants import PRIMITIVE_TYPES
+from Lab3.task.utils.templates import XML_ITEM
 
 class Formatter:
+    @staticmethod
     def move_line(string, indent):
         return "\t" * indent + string
     

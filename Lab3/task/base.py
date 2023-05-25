@@ -1,12 +1,14 @@
+
 import re
 from abc import ABC, abstractmethod
 from types import NoneType, FunctionType, MethodType, CodeType, ModuleType,\
-CellType, BuiltinMethodType, BuiltinFunctionType, WrapperDescriptorType,\
-MethodDescriptorType, MappingProxyType, GetSetDescriptorType, MemberDescriptorType
+    CellType, BuiltinMethodType, BuiltinFunctionType, WrapperDescriptorType, \
+    MethodDescriptorType, MappingProxyType, GetSetDescriptorType, MemberDescriptorType
 from typing import Any, IO, Hashable, Collection, Iterable
 
-from utils.constants import TYPE_MAPPING
-from utils.helpers import Formatter
+from Lab3.task.utils.constants import TYPE_MAPPING
+from Lab3.task.utils.helpers import Formatter
+
 
 class Serializer(ABC):
     _IGNORED_FIELDS: set[str] = (
@@ -24,25 +26,31 @@ class Serializer(ABC):
     formatter = Formatter()
 
     @staticmethod
-    def __get_key(value, obj: dict):
+    def _get_key(value: Hashable, obj: dict):
         return [key for key in obj if obj[key] == value][0]
-    
+
     @classmethod
     def _type_from_str(cls, s: str, pattern: str) -> type:
         if not re.search(pattern, s):
             return NoneType
+
         return TYPE_MAPPING[re.search(pattern, s).group(1)]
-    
+
     def get_items(self, obj) -> dict[str, Any]:
+        """
+
+        :param obj:
+        :return:
+        """
         if isinstance(obj, (BuiltinFunctionType, BuiltinMethodType)):
             return {}
-        
+
         if isinstance(obj, dict):
             return obj
-        
+
         elif isinstance(obj, Collection):
             return dict(enumerate(obj))
-        
+
         elif isinstance(obj, CodeType):
             return {
                 "argcount": obj.co_argcount,
@@ -62,7 +70,7 @@ class Serializer(ABC):
                 "freevars": obj.co_freevars,
                 "cellvars": obj.co_cellvars,
             }
-        
+
         elif isinstance(obj, FunctionType):
             if obj.__closure__ and "__class__" in obj.__code__.co_freevars:
                 closure = ([... for _ in obj.__closure__])
@@ -70,6 +78,7 @@ class Serializer(ABC):
                 closure = ([cell.cell_contents for cell in obj.__closure__])
             else:
                 closure = None
+
             return {
                 "argcount": obj.__code__.co_argcount,
                 "posonlyargcount": obj.__code__.co_posonlyargcount,
@@ -102,35 +111,35 @@ class Serializer(ABC):
                 "closure": closure,
                 "qualname": obj.__qualname__
             }
-        
+
         elif isinstance(obj, MethodType):
             return {
                 "__func__": obj.__func__,
                 "__self__": obj.__self__
             }
-        
+
         elif issubclass(type(obj), type):
             return {
                 'name': obj.__name__,
                 'mro': tuple(obj.mro()[1:-1]),
                 'attrs': {
                     k: v for k, v in obj.__dict__.items()
-                    if(
+                    if (
                         k not in self._IGNORED_FIELDS and
                         type(v) not in self._IGNORED_FIELD_TYPES
                     )
                 }
             }
-        
+
         elif issubclass(type(obj), ModuleType):
             return {'name': obj.__name__}
-        
+
         elif isinstance(obj, staticmethod):
             return self.get_items(obj.__func__)
-        
+
         elif isinstance(obj, classmethod):
             return self.get_items(obj.__func__)
-        
+
         else:
             return {
                 'class': obj.__class__,
@@ -142,17 +151,17 @@ class Serializer(ABC):
                     )
                 }
             }
-        
+
     def create_object(self, obj_type: type, obj_data):
         if issubclass(obj_type, dict):
             return obj_data
-        
+
         elif issubclass(obj_type, Iterable):
             return obj_type(obj_data.values())
-        
+
         elif issubclass(obj_type, CodeType):
             return CodeType(*list(obj_data.values()))
-        
+
         elif issubclass(obj_type, FunctionType):
             if obj_data.get('closure'):
                 closure = tuple([CellType(x) for x in obj_data.get('closure')])
@@ -160,9 +169,9 @@ class Serializer(ABC):
                 closure = tuple([CellType(...) for _ in obj_data.get('closure')])
             else:
                 closure = tuple()
-            
+
             obj = FunctionType(
-                code = CodeType(*list(obj_data.values())[:16]),
+                code=CodeType(*list(obj_data.values())[:16]),
                 globals=obj_data.get('globals'),
                 name=obj_data['name'],
                 closure=closure
@@ -171,10 +180,16 @@ class Serializer(ABC):
             obj.__globals__[obj.__name__] = obj
 
             return obj
-        
+
+        elif issubclass(obj_type, MethodType):
+            return MethodType(
+                obj_data.get('__func__'),
+                obj_data.get('__self__'),
+            )
+
         elif issubclass(obj_type, (staticmethod, classmethod)):
             return self.create_object(FunctionType, obj_data)
-        
+
         elif issubclass(obj_type, type):
             obj = type(obj_data.get('name'), obj_data.get('mro'), obj_data.get('attrs'))
 
@@ -184,26 +199,30 @@ class Serializer(ABC):
                 ...
 
             return obj
-        
+
         elif issubclass(obj_type, ModuleType):
             return __import__(obj_data.get('name'))
-        
+
         else:
             obj = object.__new__(obj_data.get('class'))
-            obj.__dict__ = obj_data.ger('attrs')
+            obj.__dict__ = obj_data.get('attrs')
 
             return obj
-        
+
     def dump(self, obj: Any, fp: IO[str]) -> None:
+
         fp.write(self.dumps(obj))
 
     def load(self, fp: IO[str]):
+      
         return self.loads(fp.read())
-    
+
     @abstractmethod
     def dumps(self, obj) -> str:
+
         raise NotImplementedError
-    
+
     @abstractmethod
     def loads(self, s):
+    
         raise NotImplementedError

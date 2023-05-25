@@ -2,7 +2,7 @@ import os.path
 import unittest
 
 from Lab3.task.serialize import JSONSerializer, XMLSerializer
-from tests import DATA_DIR
+from Lab3.tests import DATA_DIR
 
 
 class JSONBasicTypesCase(unittest.TestCase):
@@ -49,48 +49,48 @@ class JSONBasicTypesCase(unittest.TestCase):
 
     def test_dump_and_load(self):
         with (
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "w+") as fw,
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "r") as fr
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "w+") as fw,
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "r") as fr
         ):
             self.json_ser.dump("14", fw)
             fw.seek(0)
             self.assertEqual(self.json_ser.load(fr), '14')
 
         with (
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "w+") as fw,
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "r") as fr
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "w+") as fw,
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "r") as fr
         ):
             self.json_ser.dump(14, fw)
             fw.seek(0)
             self.assertEqual(self.json_ser.load(fr), 14)
 
         with (
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "w+") as fw,
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "r") as fr
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "w+") as fw,
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "r") as fr
         ):
             self.json_ser.dump(14.0, fw)
             fw.seek(0)
             self.assertEqual(self.json_ser.load(fr), 14.0)
 
         with (
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "w+") as fw,
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "r") as fr
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "w+") as fw,
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "r") as fr
         ):
             self.json_ser.dump(0.9j + 14, fw)
             fw.seek(0)
             self.assertEqual(self.json_ser.load(fr), 0.9j + 14)
 
         with (
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "w+") as fw,
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "r") as fr
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "w+") as fw,
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "r") as fr
         ):
             self.json_ser.dump("False", fw)
             fw.seek(0)
             self.assertEqual(self.json_ser.load(fr), "False")
 
         with (
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "w+") as fw,
-            open(os.path.join(DATA_DIR, "dump_and_load.json"), "r") as fr
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "w+") as fw,
+            open(os.path.join(os.path.abspath(DATA_DIR), "dump_and_load.json"), "r") as fr
         ):
             self.json_ser.dump(False, fw)
             fw.seek(0)

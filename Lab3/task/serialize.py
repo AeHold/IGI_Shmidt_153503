@@ -1,10 +1,12 @@
+"""Serialization of Lab_3"""
 import re
 from types import NoneType, EllipsisType
 from typing import Iterator
 
 from .base import Serializer
-from utils.templates import JSON, XML, XML_PRIMITIVE
-from utils.constants import PRIMITIVE_TYPES, TYPE_MAPPING
+from Lab3.task.utils.templates import JSON, XML, XML_PRIMITIVE
+from Lab3.task.utils.constants import PRIMITIVE_TYPES, TYPE_MAPPING
+
 
 class JSONSerializer(Serializer):
     _TYPE_PATTERN: str = r"<class '(\w\S+)'>_"
@@ -22,10 +24,11 @@ class JSONSerializer(Serializer):
         for num_type in (int, float, complex):
             try:
                 return num_type(s)
-            except(ValueError, TypeError):
+            except (ValueError, TypeError):
                 pass
 
     def _load_from_json(self, template: str) -> dict:
+
         obj: dict = {}
         lines: list[str] = template.split("\n")
         it: Iterator[str] = enumerate(lines)
@@ -47,11 +50,12 @@ class JSONSerializer(Serializer):
                     i, line = next(it, None)
                     brackets += ("{" in lines[i]) - ("}" in lines[i])
 
-                    obj[self.loads(key)] = self.loads('\n'.join(lines[start:i]))
+                obj[self.loads(key)] = self.loads('\n'.join(lines[start:i]))
 
-                    return obj
-                
+        return obj
+
     def dumps(self, obj) -> str:
+
         if type(obj) == str:
             return f'"{obj}"'
         if type(obj) == type(Ellipsis):
@@ -60,17 +64,18 @@ class JSONSerializer(Serializer):
             return str(obj)
         if type(obj) in [bool, NoneType]:
             return self._KEYWORDS[obj]
-        
+
         return JSON.format(
             type=type(obj),
             id=id(obj),
             items=self.formatter.to_json(self.get_items(obj), self.dumps)
         )
-    
+
     def loads(self, s: str):
+
         if not len(s):
             return
-        
+
         if s == ' ':
             return ...
         if s.startswith('"'):
@@ -79,11 +84,12 @@ class JSONSerializer(Serializer):
             return self._get_key(s, self._KEYWORDS)
         if self._to_number(s) is not None:
             return self._to_number(s)
-        
+
         return self.create_object(
             self._type_from_str(s, self._TYPE_PATTERN),
             self._load_from_json(s)
         )
+
 
 class XMLSerializer(Serializer):
     _TYPE_PATTERN: str = r'type="(\w+)"'
@@ -117,6 +123,7 @@ class XMLSerializer(Serializer):
         return obj
 
     def dumps(self, obj) -> str:
+
         if type(obj) in PRIMITIVE_TYPES:
             obj_type = self._get_key(type(obj), TYPE_MAPPING)
             return f'<primitive type="{obj_type}">{obj}</primitive>'
@@ -128,7 +135,7 @@ class XMLSerializer(Serializer):
         )
 
     def loads(self, s):
-
+      
         if not len(s):
             return
 
