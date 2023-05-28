@@ -3,7 +3,7 @@ import re
 from types import NoneType, EllipsisType
 from typing import Iterator
 
-from .base import Serializer
+from Lab3.task.base import Serializer
 from Lab3.task.utils.templates import JSON, XML, XML_PRIMITIVE
 from Lab3.task.utils.constants import PRIMITIVE_TYPES, TYPE_MAPPING
 
@@ -66,7 +66,7 @@ class JSONSerializer(Serializer):
             return self._KEYWORDS[obj]
 
         return JSON.format(
-            type=type(obj),
+            type=type(obj) if type(obj) in TYPE_MAPPING.values() else object,
             id=id(obj),
             items=self.formatter.to_json(self.get_items(obj), self.dumps)
         )
@@ -129,7 +129,7 @@ class XMLSerializer(Serializer):
             return f'<primitive type="{obj_type}">{obj}</primitive>'
 
         return XML.format(
-            type=self._get_key(type(obj), TYPE_MAPPING),
+            type=self._get_key(type(obj), TYPE_MAPPING) if type(obj) in TYPE_MAPPING.values() else "object",
             id=id(obj),
             items=self.formatter.to_xml(self.get_items(obj), self.dumps)
         )
