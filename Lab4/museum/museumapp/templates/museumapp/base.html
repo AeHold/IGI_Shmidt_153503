@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title%}Title{% endblock%}</title>
+</head>
+<style>
+    .header{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 10px;
+    }
+    body{
+        padding: 0;
+        margin: 0;
+    }
+    .link{
+        text-decoration: none;
+        cursor: pointer;
+        color: black;
+    }
+</style>
+<body>
+    <div class = "header">
+        <a class = "link" href="">Home</a>
+        <a class = "link" href="/exhibitions">Exhibitions</a>
+        <a class = "link" href="/exponates">Exponates</a>
+        <a class = "link" href="/schedule">Excursions schedule</a>
+        <a class = "link" href="/login">Log in</a>
+        <a class = "link" href="/sign-up">Sign up</a>
+    </div>
+    <div class="content">
+        <div class="container">
+        {%block content%}
+        {% endblock%}
+        </div>
+    </div>
+</body>
+</html>

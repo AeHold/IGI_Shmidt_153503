@@ -1,5 +1,5 @@
 """
-URL configuration for vet_clinic project.
+URL configuration for museum project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -16,13 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from petclinic.views import ClientViewSet
-from rest_framework import routers
-
-router = routers.SimpleRouter()
-router.register(r'client',ClientViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include(router.urls)),
+    path('', include('museumapp.url')),
+    path('', include('django.contrib.auth.urls'))
 ]
