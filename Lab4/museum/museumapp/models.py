@@ -30,7 +30,7 @@ class Exponate(models.Model):
     author = models.TextField(max_length=50)
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
     photo = models.ImageField()
-    hall = models.ForeignKey(Hall, on_delete=models.CASCADE)
+    hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='exponates')
     receipt_date = models.DateField()
 
     def __str__(self):
@@ -48,6 +48,7 @@ class Profile(models.Model):
 class Exhibition(models.Model):
     hall = models.ManyToManyField(Hall)
     name = models.CharField(max_length=50)
+    description = models.CharField(max_length=500)
     def __str__(self):
         return self.name
 

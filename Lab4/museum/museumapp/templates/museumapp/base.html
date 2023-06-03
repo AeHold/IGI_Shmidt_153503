@@ -14,9 +14,65 @@
         padding: 10px;
         background-color: rgb(236, 133, 92);
     }
+    .profilePhoto{
+        height: 400px;
+    }
+    .pageFiltered{
+        display: flex;
+        flex-direction: row;  
+        justify-content: space-between;
+        width: 700px; 
+    }
     body{
         padding: 0;
         margin: 0;
+    }
+    .exhibitionLink{
+        background-color: blanchedalmond;
+        color: black;
+        padding: 20px;
+        width: 300px;
+        display: flex;
+        margin: 10px;
+        position: relative;
+        font-size: 15pt;
+    }
+    .sectionTitle{
+        font-size: 18pt;
+        font-weight: bold;
+    }
+    .exponateBlock{
+        display: flex;
+        flex-direction: row;
+        margin: 20px 0px;
+    }
+    .information{
+        display: flex;
+        margin: 0px 10px;
+        flex-direction: column;
+        width: 700px;
+    }
+    .titleLink{
+        font-size: 18pt;
+        font-weight: bold;
+        text-decoration:underline;
+        cursor: pointer;
+        color: black;
+    }
+    .halls{
+        margin: 30px 0px;
+    }
+    .photo{
+        height: 200px;
+    }
+    .excursionBlock{
+        margin: 10px 0px;
+    }
+    .pageTitle{
+        font-size: 25pt;
+        font-weight: bolder;
+        margin: 50px 0px;
+        display: flex;
     }
     .link{
         text-decoration: none;
@@ -50,12 +106,19 @@
         font-size: 13 pt;
         background-color: rgb(255, 246, 217);
     }
+    .checkboxBlock{
+        display: flex;
+        flex-direction: row;
+    }
+    .formTitle{
+        margin:10px 0px;
+        font-weight: bold;
+    }
 </style>
 <body>
     <div class = "header">
-        <a class = "link" href="">Home</a>
+        <a class = "link" href="/">Home</a>
         <a class = "link" href="/exhibitions">Exhibitions</a>
-        <a class = "link" href="/exponates">Exponates</a>
         <a class = "link" href="/schedule">Excursions schedule</a>
         {%if user.is_anonymous%}
         <a class = "link" href="/login">Log in</a>

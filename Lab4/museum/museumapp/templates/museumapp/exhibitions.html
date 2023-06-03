@@ -1,5 +1,8 @@
 {%extends "museumapp/base.html"%}
 {%block title%}Exhibitions{%endblock%}
 {%block content%}
-
+<div class="pageTitle">Exhibitions</div>
+    {%for i in exhibitions%}
+        <a class = "exhibitionLink" href="{%url 'exhibition' exhibition_id=i.id%}">{{i.name}}</a>
+    {%endfor%}
 {%endblock%}

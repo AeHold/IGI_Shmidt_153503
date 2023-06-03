@@ -108,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Minsk'
 
 USE_I18N = True
 
@@ -130,3 +130,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "image")
 MEDIA_URL = '/image/'
 
 LOGOUT_REDIRECT_URL = '/'
+
+DATE_FORMAT='%m-%d-%Y'
+TIME_FORMAT="%H:%M"

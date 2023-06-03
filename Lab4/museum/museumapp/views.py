@@ -6,10 +6,18 @@ import datetime
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 import requests
+import json
 
 class MainView(View):
     def get(self, req, *args, **kwargs):
-        return render(req, 'museumapp/main.html', {})
+        if(req.user.is_anonymous):
+            cat = requests.get("https://cataas.com/cat/says/Welcome to our museum")
+        else:
+            cat = requests.get("https://cataas.com/cat/says/You must work,{0} %0AWhy do you proCATstinating%3F".format(req.user.username))
+        cat_fact = json.loads(requests.get("https://catfact.ninja/fact").content.decode())['fact']
+        excursions = models.Excursion.objects.filter(date__date=datetime.datetime.today().date())
+        print(excursions)
+        return render(req, 'museumapp/main.html', {'fact':cat_fact, "cat":cat, "excursions":excursions})
 
 class LoginView(View):
     form_class = LoginForm
@@ -64,28 +72,35 @@ class SignUpView(View):
 
 class ExhibitionsView(View):
     def get(self, req, *args, **kwargs):
-        return render(req, 'museumapp/exhibitions.html', {})
-
-class ExcursionsView(View):
-    def get(self, req, *args, **kwargs):
-        return render(req, 'museumapp/excursions.html', {})
-
-class ExponatesView(View):
-    def get(self, req, *args, **kwargs):
-        return render(req, 'museumapp/exponates.html', {})
+        exhibitions = models.Exhibition.objects.all()
+        return render(req, 'museumapp/exhibitions.html', {"exhibitions":exhibitions})
 
 class ProfileView(View):
     def get(self, req, *args, **kwargs):
-        return render(req, 'museumapp/profile.html', {})
+        user = req.user
+        profile = models.Profile.objects.get(user=user)
+        exponates = profile.exponates.all()
+        cat = requests.get("https://cataas.com/cat/says/Hi,{0}".format(user.username))
+        excursions = models.Excursion.objects.filter(guide=profile, date__gte=datetime.datetime.today())
+        return render(req, 'museumapp/profile.html', {"profile":profile, "exponates":exponates, "excursions":excursions,"cat":cat})
 
 class ScheduleView(View):
     def get(self, req, *args, **kwargs):
-        return render(req, 'museumapp/schedule.html', {})
+        exhibitions = models.Exhibition.objects.all()
+        excursions = models.Excursion.objects.filter(date__gte=req.GET.get("dfrom") if req.GET.get("dfrom",'')!=''
+                else datetime.datetime.today(), date__lte=req.GET.get("dto") 
+                        if req.GET.get("dto",'')!='' else datetime.datetime.strptime(req.GET.get("dfrom"),'%Y-%m-%d').date() + datetime.timedelta(days=7)
+                                if req.GET.get("dfrom",'')!='' else datetime.datetime.today() + datetime.timedelta(days=7))
+        if len(req.GET) > 2:
+            exh_filter = []
+            for i in exhibitions:
+                if req.GET.get(str(i)):
+                    exh_filter.append(i)
 
-class ExponateView(View):
-    def get(self, req, *args, exponate_id, **kwargs):
-        return render(req, 'museumapp/exponate.html', {})
+            excursions = excursions.filter(exhibition__in = exh_filter).distinct()
+        return render(req, 'museumapp/schedule.html', {"excursions":excursions, "exhibitions":exhibitions})
 
 class ExhibitionView(View):
     def get(self, req, *args, exhibition_id, **kwargs):
-        return render(req, 'museumapp/exhibition.html', {})
+        exhibition = models.Exhibition.objects.get(id=exhibition_id)
+        return render(req, 'museumapp/exhibition.html', {"exhibition":exhibition})
