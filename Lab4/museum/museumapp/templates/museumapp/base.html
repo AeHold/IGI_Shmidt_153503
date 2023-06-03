@@ -11,7 +11,8 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        margin: 10px;
+        padding: 10px;
+        background-color: rgb(236, 133, 92);
     }
     body{
         padding: 0;
@@ -22,6 +23,33 @@
         cursor: pointer;
         color: black;
     }
+    .markedLink{
+        text-decoration:underline;
+        cursor: pointer;
+        color: brown;
+    }
+    .formColumn{
+        display:flex;
+        flex-direction: column;
+        margin:50px;
+        width: 200px;
+    }
+    .content{
+        display: flex;
+        justify-content: center;
+    }
+    #id_phone_number,#id_password,#id_first_name,#id_last_name,#id_email,#id_password_confirmation{
+        border-radius: 10px;
+        height: 30px;
+        background-color: rgb(255, 237, 224);
+    }
+    .button{
+        width:fit-content;
+        padding: 0px 10px;
+        margin: 10px 0px;
+        font-size: 13 pt;
+        background-color: rgb(255, 246, 217);
+    }
 </style>
 <body>
     <div class = "header">
@@ -29,8 +57,13 @@
         <a class = "link" href="/exhibitions">Exhibitions</a>
         <a class = "link" href="/exponates">Exponates</a>
         <a class = "link" href="/schedule">Excursions schedule</a>
+        {%if user.is_anonymous%}
         <a class = "link" href="/login">Log in</a>
         <a class = "link" href="/sign-up">Sign up</a>
+        {%else%}
+        <a class = "link" href="/profile">Profile</a>
+        <a class = "link" href="/logout">Logout</a>
+        {%endif%}
     </div>
     <div class="content">
         <div class="container">
