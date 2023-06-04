@@ -16,7 +16,6 @@ class MainView(View):
             cat = requests.get("https://cataas.com/cat/says/You must work,{0} %0AWhy do you proCATstinating%3F".format(req.user.username))
         cat_fact = json.loads(requests.get("https://catfact.ninja/fact").content.decode())['fact']
         excursions = models.Excursion.objects.filter(date__date=datetime.datetime.today().date())
-        print(excursions)
         return render(req, 'museumapp/main.html', {'fact':cat_fact, "cat":cat, "excursions":excursions})
 
 class LoginView(View):

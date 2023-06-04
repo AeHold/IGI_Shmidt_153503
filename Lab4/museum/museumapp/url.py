@@ -2,7 +2,7 @@ from django.urls import path, re_path
 from museumapp import views
 
 urlpatterns = [
-    path('', views.MainView.as_view()),
+    path('', views.MainView.as_view(), name = "main"),
     path('login/', views.LoginView.as_view(), name = "login"),
     path('sign-up/', views.SignUpView.as_view(), name = "sign-up"),
     path('profile/', views.ProfileView.as_view(), name = "profile"),
